@@ -1,0 +1,439 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Formularz danych OWP</title>
+  <style>
+    :root {
+      --border: #8fa1bf;
+      --header: #b8c6e0;
+      --bg: #f5f7fb;
+      --text: #1f2937;
+      --muted: #6b7280;
+      --accent: #2b6cb0;
+      --white: #ffffff;
+      --ok: #0f766e;
+      --danger: #b91c1c;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      font-family: Arial, Helvetica, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      padding: 24px;
+    }
+
+    .wrap {
+      max-width: 1150px;
+      margin: 0 auto;
+    }
+
+    .card {
+      background: var(--white);
+      border-radius: 16px;
+      box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+      padding: 24px;
+    }
+
+    h1 {
+      margin: 0 0 8px;
+      font-size: 30px;
+    }
+
+    .sub {
+      margin: 0 0 24px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+
+    .meta-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(240px, 1fr));
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .field label {
+      display: block;
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .field input, .field textarea {
+      width: 100%;
+      padding: 12px 14px;
+      border: 1px solid #cbd5e1;
+      border-radius: 10px;
+      font-size: 15px;
+      font-family: inherit;
+    }
+
+    .field textarea {
+      min-height: 92px;
+      resize: vertical;
+    }
+
+    .toolbar {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 18px;
+    }
+
+    button {
+      border: 0;
+      border-radius: 10px;
+      padding: 12px 18px;
+      font-size: 15px;
+      cursor: pointer;
+      background: var(--accent);
+      color: white;
+    }
+
+    button.secondary {
+      background: #e5e7eb;
+      color: #111827;
+    }
+
+    button:disabled {
+      opacity: .7;
+      cursor: not-allowed;
+    }
+
+    .status {
+      min-height: 24px;
+      margin: 8px 0 18px;
+      font-weight: 700;
+    }
+
+    .status.ok { color: var(--ok); }
+    .status.error { color: var(--danger); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      table-layout: fixed;
+      overflow: hidden;
+      border-radius: 12px;
+    }
+
+    th, td {
+      border: 1px solid var(--border);
+      padding: 12px;
+      vertical-align: middle;
+    }
+
+    th {
+      background: var(--header);
+      text-align: center;
+      font-size: 15px;
+    }
+
+    th:first-child,
+    td:first-child {
+      width: 48%;
+      text-align: left;
+    }
+
+    .metric {
+      line-height: 1.45;
+    }
+
+    input[type="number"] {
+      width: 100%;
+      padding: 10px 12px;
+      border: 1px solid #cbd5e1;
+      border-radius: 8px;
+      font-size: 15px;
+      text-align: center;
+    }
+
+    input[readonly] {
+      background: #f3f4f6;
+      color: #111827;
+      font-weight: 700;
+    }
+
+    .note {
+      margin-top: 18px;
+      color: var(--muted);
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    @media (max-width: 860px) {
+      body { padding: 12px; }
+      .card { padding: 16px; }
+      .meta-grid { grid-template-columns: 1fr; }
+      table, thead, tbody, tr, th, td { display: block; }
+      thead { display: none; }
+      tr {
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        margin-bottom: 14px;
+        overflow: hidden;
+      }
+      td:first-child {
+        width: 100%;
+        background: var(--header);
+        font-weight: 700;
+      }
+      td[data-label]::before {
+        content: attr(data-label);
+        display: block;
+        font-size: 12px;
+        color: var(--muted);
+        margin-bottom: 6px;
+        text-transform: uppercase;
+        letter-spacing: .03em;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <h1>Formularz danych OWP</h1>
+      <p class="sub">
+        Klient wpisuje dane w tabeli i klika „Wyślij”. Formularz wysyła dane do Google Sheets przez Google Apps Script.
+      </p>
+
+      <div class="meta-grid">
+        <div class="field">
+          <label for="projectName">Nazwa projektu / placówki</label>
+          <input id="projectName" type="text" placeholder="np. Przedszkole Miejskie nr 1" />
+        </div>
+        <div class="field">
+          <label for="contactName">Osoba kontaktowa</label>
+          <input id="contactName" type="text" placeholder="Imię i nazwisko" />
+        </div>
+        <div class="field">
+          <label for="contactEmail">E-mail</label>
+          <input id="contactEmail" type="email" placeholder="adres@email.pl" />
+        </div>
+        <div class="field">
+          <label for="submissionDate">Data wypełnienia</label>
+          <input id="submissionDate" type="date" />
+        </div>
+        <div class="field" style="grid-column: 1 / -1;">
+          <label for="notes">Uwagi</label>
+          <textarea id="notes" placeholder="Dodatkowe informacje"></textarea>
+        </div>
+      </div>
+
+      <div class="toolbar">
+        <button id="sendBtn">Wyślij</button>
+        <button id="exportCsvBtn" type="button" class="secondary">Eksportuj do CSV</button>
+        <button id="resetBtn" type="button" class="secondary">Wyczyść</button>
+      </div>
+
+      <div id="status" class="status"></div>
+
+      <table>
+        <thead>
+          <tr>
+            <th></th>
+            <th>LICZBA KOBIET</th>
+            <th>LICZBA MĘŻCZYZN</th>
+            <th>SUMA</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr data-key="dzieci_owp">
+            <td class="metric">Liczba dzieci w OWP</td>
+            <td data-label="Liczba kobiet"><input type="number" min="0" step="1" class="female" /></td>
+            <td data-label="Liczba mężczyzn"><input type="number" min="0" step="1" class="male" /></td>
+            <td data-label="Suma"><input type="number" class="sum" readonly /></td>
+          </tr>
+          <tr data-key="dzieci_orzeczenie">
+            <td class="metric">Liczba dzieci w OWP posiadających orzeczenie o niepełnosprawności</td>
+            <td data-label="Liczba kobiet"><input type="number" min="0" step="1" class="female" /></td>
+            <td data-label="Liczba mężczyzn"><input type="number" min="0" step="1" class="male" /></td>
+            <td data-label="Suma"><input type="number" class="sum" readonly /></td>
+          </tr>
+          <tr data-key="dzieci_spe_ppp">
+            <td class="metric">Liczba dzieci w OWP o specjalnych potrzebach rozwojowych i edukacyjnych, objętych wsparciem (na podstawie orzeczenia / opinii PPP)</td>
+            <td data-label="Liczba kobiet"><input type="number" min="0" step="1" class="female" /></td>
+            <td data-label="Liczba mężczyzn"><input type="number" min="0" step="1" class="male" /></td>
+            <td data-label="Suma"><input type="number" class="sum" readonly /></td>
+          </tr>
+          <tr data-key="dzieci_spe_nauczyciel">
+            <td class="metric">Liczba dzieci w OWP o specjalnych potrzebach rozwojowych i edukacyjnych, objętych wsparciem (na podstawie opinii nauczyciela / wychowawcy)</td>
+            <td data-label="Liczba kobiet"><input type="number" min="0" step="1" class="female" /></td>
+            <td data-label="Liczba mężczyzn"><input type="number" min="0" step="1" class="male" /></td>
+            <td data-label="Suma"><input type="number" class="sum" readonly /></td>
+          </tr>
+          <tr data-key="srednia_w_grupie">
+            <td class="metric">Przeciętna liczba dzieci w grupie</td>
+            <td data-label="Liczba kobiet"><input type="number" min="0" step="1" class="female" /></td>
+            <td data-label="Liczba mężczyzn"><input type="number" min="0" step="1" class="male" /></td>
+            <td data-label="Suma"><input type="number" class="sum" readonly /></td>
+          </tr>
+          <tr data-key="nauczyciele_owp">
+            <td class="metric">Liczba nauczycieli w OWP</td>
+            <td data-label="Liczba kobiet"><input type="number" min="0" step="1" class="female" /></td>
+            <td data-label="Liczba mężczyzn"><input type="number" min="0" step="1" class="male" /></td>
+            <td data-label="Suma"><input type="number" class="sum" readonly /></td>
+          </tr>
+          <tr data-key="nauczyciele_niepelnosprawnosc">
+            <td class="metric">Liczba nauczycieli z niepełnosprawnościami</td>
+            <td data-label="Liczba kobiet"><input type="number" min="0" step="1" class="female" /></td>
+            <td data-label="Liczba mężczyzn"><input type="number" min="0" step="1" class="male" /></td>
+            <td data-label="Suma"><input type="number" class="sum" readonly /></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p class="note">
+        Uwaga: przed użyciem trzeba wkleić do kodu adres URL wdrożonego Web App z Google Apps Script. Instrukcja jest w pliku README.
+      </p>
+    </div>
+  </div>
+
+  <script>
+    const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxUvkZy0NJm2uSiRIApkx_1H6RhrN7nBzlsRDy7ivTXaXGcx-fuspUS56miKpdhc7Y6yw/exec';
+
+    const rows = [...document.querySelectorAll('tbody tr')];
+    const statusBox = document.getElementById('status');
+    const sendBtn = document.getElementById('sendBtn');
+
+    function normalizeNumber(value) {
+      const n = parseInt(value, 10);
+      return Number.isFinite(n) && n >= 0 ? n : 0;
+    }
+
+    function recalcRow(row) {
+      const female = normalizeNumber(row.querySelector('.female').value);
+      const male = normalizeNumber(row.querySelector('.male').value);
+      row.querySelector('.sum').value = female + male;
+    }
+
+    function setStatus(message, kind = '') {
+      statusBox.textContent = message;
+      statusBox.className = 'status' + (kind ? ' ' + kind : '');
+    }
+
+    function getRowData() {
+      return rows.map((row) => {
+        const metric = row.querySelector('.metric').innerText.replace(/\s+/g, ' ').trim();
+        const female = normalizeNumber(row.querySelector('.female').value);
+        const male = normalizeNumber(row.querySelector('.male').value);
+        return {
+          metric,
+          female,
+          male,
+          sum: female + male
+        };
+      });
+    }
+
+    function getPayload() {
+      return {
+        meta: {
+          projectName: document.getElementById('projectName').value.trim(),
+          contactName: document.getElementById('contactName').value.trim(),
+          contactEmail: document.getElementById('contactEmail').value.trim(),
+          submissionDate: document.getElementById('submissionDate').value,
+          notes: document.getElementById('notes').value.trim()
+        },
+        rows: getRowData()
+      };
+    }
+
+    rows.forEach((row) => {
+      row.querySelectorAll('.female, .male').forEach((input) => {
+        input.addEventListener('input', () => recalcRow(row));
+      });
+      recalcRow(row);
+    });
+
+    document.getElementById('resetBtn').addEventListener('click', () => {
+      document.getElementById('projectName').value = '';
+      document.getElementById('contactName').value = '';
+      document.getElementById('contactEmail').value = '';
+      document.getElementById('submissionDate').value = '';
+      document.getElementById('notes').value = '';
+
+      rows.forEach((row) => {
+        row.querySelector('.female').value = '';
+        row.querySelector('.male').value = '';
+        recalcRow(row);
+      });
+
+      setStatus('');
+    });
+
+    document.getElementById('exportCsvBtn').addEventListener('click', () => {
+      const payload = getPayload();
+      const lines = [];
+      lines.push(['nazwa_projektu', payload.meta.projectName].join(';'));
+      lines.push(['osoba_kontaktowa', payload.meta.contactName].join(';'));
+      lines.push(['email', payload.meta.contactEmail].join(';'));
+      lines.push(['data_wypelnienia', payload.meta.submissionDate].join(';'));
+      lines.push(['uwagi', '"' + payload.meta.notes.replaceAll('"', '""') + '"'].join(';'));
+      lines.push('');
+      lines.push(['pozycja', 'liczba_kobiet', 'liczba_mezczyzn', 'suma'].join(';'));
+
+      payload.rows.forEach((row) => {
+        const escapedMetric = '"' + row.metric.replaceAll('"', '""') + '"';
+        lines.push([escapedMetric, row.female, row.male, row.sum].join(';'));
+      });
+
+      const csvContent = '\uFEFF' + lines.join('\n');
+      const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'formularz_owp.csv';
+      document.body.appendChild(a);
+      a.click();
+      document.body.removeChild(a);
+      URL.revokeObjectURL(url);
+    });
+
+    sendBtn.addEventListener('click', async () => {
+      if (!SCRIPT_URL || SCRIPT_URL.includes('WSTAW_TUTAJ')) {
+        setStatus('Najpierw wklej adres Web App do pola SCRIPT_URL w pliku index.html.', 'error');
+        return;
+      }
+
+      const payload = getPayload();
+
+      if (!payload.meta.projectName) {
+        setStatus('Uzupełnij pole: Nazwa projektu / placówki.', 'error');
+        return;
+      }
+
+      sendBtn.disabled = true;
+      setStatus('Trwa wysyłanie...', '');
+
+      try {
+        const response = await fetch(SCRIPT_URL, {
+          method: 'POST',
+          mode: 'cors',
+          headers: {
+            'Content-Type': 'text/plain;charset=utf-8'
+          },
+          body: JSON.stringify(payload)
+        });
+
+        const text = await response.text();
+
+        if (!response.ok) {
+          throw new Error(text || 'Błąd wysyłki');
+        }
+
+        setStatus('Dane zostały zapisane w arkuszu.', 'ok');
+      } catch (error) {
+        setStatus('Nie udało się wysłać danych. Sprawdź konfigurację Web App i uprawnienia. ' + error.message, 'error');
+      } finally {
+        sendBtn.disabled = false;
+      }
+    });
+  </script>
+</body>
+</html>
